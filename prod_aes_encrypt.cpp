@@ -1,7 +1,12 @@
-// A quick run at encryption using AES and crypto++ library
+/* A quick run at encryption using AES and crypto++ library
+	later versions will provide option to chose files and only allow
+	use of this program after verification from an ARM board.
+
+*/
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <string>
 
 //Crypto++ lib files
 #include "cryptopp/modes.h"
@@ -12,6 +17,10 @@ using namespace std;
 
 void encrypt_file(string);
 void decrypt_file();
+
+byte key[ CryptoPP::AES::DEFAULT_KEYLENGTH ]; // cout this to see what it is.
+byte iv[ CryptoPP::AES::BLOCKSIZE ];
+
 int main()
 {
    //if credentials form ARM board are valid ...
@@ -36,7 +45,7 @@ int main()
 	   }
 	   else if(usr_choice == 0)
 	   {
-	   	Exit_test == true;
+	   	Exit_test = true;
 	   }
    }
 	return 0;
@@ -44,59 +53,50 @@ int main()
 
 void encrypt_file(string data)
 {
-	string plain_text = data;
-	string encrypted_input;
+	string plaintext = data;
+	string ciphertext;
 	ofstream aes_file;
 
-	byte key[ CryptoPP::AES::DEFAULT_KEYLENGTH ]; // cout this to see what it is.
-	byte iv[ CryptoPP::AES::BLOCKSIZE ];
 	memset( key, 0x00, CryptoPP::AES::DEFAULT_KEYLENGTH );
 	memset( iv, 0x00, CryptoPP::AES::BLOCKSIZE );
 
-
-	cout << "Plain Text (" << plain_text.size() << " bytes)" << endl;
-	cout << plain_text <<"\n"<<endl;
-
+	cout << "Plain Text (" << plaintext.size() << " bytes)" << endl;
+	cout << plaintext <<"\n"<<endl;
 
 	CryptoPP::AES::Encryption aesEncryption(key, CryptoPP::AES::DEFAULT_KEYLENGTH);
 	CryptoPP::CBC_Mode_ExternalCipher::Encryption cbcEncryption( aesEncryption, iv );
 
-	CryptoPP::StreamTransformationFilter stfEncryptor(cbcEncryption, new CryptoPP::StringSink( encrypted_input ) );
-	stfEncryptor.Put( reinterpret_cast<const unsigned char*>( plain_text.c_str() ), plain_text.length() + 1 );
+	CryptoPP::StreamTransformationFilter stfEncryptor(cbcEncryption, new CryptoPP::StringSink( ciphertext ) );
+	stfEncryptor.Put( reinterpret_cast<const unsigned char*>( plaintext.c_str() ), plaintext.length() + 1 );
 	stfEncryptor.MessageEnd();
-	aes_file.open("create_file.txt");
-	aes_file << encrypted_input;
+
+	aes_file.open("Locked_file.txt");
+	aes_file << ciphertext;
 	aes_file.close();
+
 }
 
 void decrypt_file()
 {
-	string file_contents;
-	string decrypted_file_contents;
+	string ciphertex;
+	string decryptedtext;
 
-	byte key[ CryptoPP::AES::DEFAULT_KEYLENGTH ]; // cout this to see what it is.
-	byte iv[ CryptoPP::AES::BLOCKSIZE ];
-	memset( key, 0x00, CryptoPP::AES::DEFAULT_KEYLENGTH );
-	memset( iv, 0x00, CryptoPP::AES::BLOCKSIZE );
+	ifstream created_file("Locked_file.txt");
+	ofstream unlocked_file;
 
-	ifstream created_file("create_file.txt");
-	if(created_file.is_open())
-	{
-		getline(created_file, decrypted_file_contents);
-		created_file.close();
-	}
+	created_file.is_open();
+	getline(created_file, ciphertex);
+	created_file.close();
 
+	cout<<decryptedtext<<endl;
 	CryptoPP::AES::Decryption aesDecryption(key, CryptoPP::AES::DEFAULT_KEYLENGTH);
 	CryptoPP::CBC_Mode_ExternalCipher::Decryption cbcDecryption( aesDecryption, iv );
 
-	CryptoPP::StreamTransformationFilter stfDecryptor(cbcDecryption, new CryptoPP::StringSink( decrypted_file_contents ) );
-	stfDecryptor.Put( reinterpret_cast<const unsigned char*>( file_contents.c_str() ), file_contents.size() );
+	CryptoPP::StreamTransformationFilter stfDecryptor(cbcDecryption, new CryptoPP::StringSink( decryptedtext ) );
+	stfDecryptor.Put( reinterpret_cast<const unsigned char*>( ciphertex.c_str() ), ciphertex.size() );
 	stfDecryptor.MessageEnd();
 
-	//
-	// Dump Decrypted Text
-	//
-	cout << "Decrypted Text: " << endl;
-	cout << decrypted_file_contents;
-	cout << endl << endl;
+	unlocked_file.open("Locked_file.txt");
+	unlocked_file << decryptedtext;
+	unlocked_file.close();
 }

@@ -12,11 +12,12 @@
 #include "cryptopp/modes.h"
 #include "cryptopp/aes.h"
 #include "cryptopp/filters.h"
-
+#include "cryptopp/osrng.h"
 using namespace std;
 
 void encrypt_file(string);
 void decrypt_file();
+
 
 byte key[ CryptoPP::AES::DEFAULT_KEYLENGTH ]; // cout this to see what it is.
 byte iv[ CryptoPP::AES::BLOCKSIZE ];
@@ -59,9 +60,6 @@ void encrypt_file(string data)
 
 	memset( key, 0x00, CryptoPP::AES::DEFAULT_KEYLENGTH );
 	memset( iv, 0x00, CryptoPP::AES::BLOCKSIZE );
-
-	cout << "Plain Text (" << plaintext.size() << " bytes)" << endl;
-	cout << plaintext <<"\n"<<endl;
 
 	CryptoPP::AES::Encryption aesEncryption(key, CryptoPP::AES::DEFAULT_KEYLENGTH);
 	CryptoPP::CBC_Mode_ExternalCipher::Encryption cbcEncryption( aesEncryption, iv );

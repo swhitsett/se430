@@ -37,12 +37,12 @@ int main()
 	   	string provided_data;  // change to int
 	   	cout<<"Enter data: ";
 	   	cin>>provided_data;
-	   	encrypt_file(provided_data);
+	   	//encrypt_file(provided_data);
 	   }
 	   else if(usr_choice == 2)
 	   {
 	   	cout<<"decrypting file....."<<endl;
-	   	decrypt_file();
+	   	//decrypt_file();
 	   }
 	   else if(usr_choice == 0)
 	   {
@@ -62,39 +62,39 @@ void encrypt_file(string data)
 	memset( iv, 0x00, CryptoPP::AES::BLOCKSIZE );
 
 	CryptoPP::AES::Encryption aesEncryption(key, CryptoPP::AES::DEFAULT_KEYLENGTH);
-	CryptoPP::CBC_Mode_ExternalCipher::Encryption cbcEncryption( aesEncryption, iv );
+	//CryptoPP::CBC_Mode_ExternalCipher::Encryption cbcEncryption( aesEncryption, iv );
 
-	CryptoPP::StreamTransformationFilter stfEncryptor(cbcEncryption, new CryptoPP::StringSink( ciphertext ) );
-	stfEncryptor.Put( reinterpret_cast<const unsigned char*>( plaintext.c_str() ), plaintext.length() + 1 );
-	stfEncryptor.MessageEnd();
+	// CryptoPP::StreamTransformationFilter stfEncryptor(cbcEncryption, new CryptoPP::StringSink( ciphertext ) );
+	// stfEncryptor.Put( reinterpret_cast<const unsigned char*>( plaintext.c_str() ), plaintext.length() + 1 );
+	// stfEncryptor.MessageEnd();
 
-	aes_file.open("Locked_file.txt");
-	aes_file << ciphertext;
-	aes_file.close();
+	// aes_file.open("Locked_file.txt");
+	// aes_file << ciphertext;
+	// aes_file.close();
 
 }
 
-void decrypt_file()
-{
-	string ciphertex;
-	string decryptedtext;
+// void decrypt_file()
+// {
+// 	string ciphertex;
+// 	string decryptedtext;
 
-	ifstream created_file("Locked_file.txt");
-	ofstream unlocked_file;
+// 	ifstream created_file("Locked_file.txt");
+// 	ofstream unlocked_file;
 
-	created_file.is_open();
-	getline(created_file, ciphertex);
-	created_file.close();
+// 	created_file.is_open();
+// 	getline(created_file, ciphertex);
+// 	created_file.close();
 
-	cout<<decryptedtext<<endl;
-	CryptoPP::AES::Decryption aesDecryption(key, CryptoPP::AES::DEFAULT_KEYLENGTH);
-	CryptoPP::CBC_Mode_ExternalCipher::Decryption cbcDecryption( aesDecryption, iv );
+// 	cout<<decryptedtext<<endl;
+// 	CryptoPP::AES::Decryption aesDecryption(key, CryptoPP::AES::DEFAULT_KEYLENGTH);
+// 	CryptoPP::CBC_Mode_ExternalCipher::Decryption cbcDecryption( aesDecryption, iv );
 
-	CryptoPP::StreamTransformationFilter stfDecryptor(cbcDecryption, new CryptoPP::StringSink( decryptedtext ) );
-	stfDecryptor.Put( reinterpret_cast<const unsigned char*>( ciphertex.c_str() ), ciphertex.size() );
-	stfDecryptor.MessageEnd();
+// 	CryptoPP::StreamTransformationFilter stfDecryptor(cbcDecryption, new CryptoPP::StringSink( decryptedtext ) );
+// 	stfDecryptor.Put( reinterpret_cast<const unsigned char*>( ciphertex.c_str() ), ciphertex.size() );
+// 	stfDecryptor.MessageEnd();
 
-	unlocked_file.open("Locked_file.txt");
-	unlocked_file << decryptedtext;
-	unlocked_file.close();
-}
+// 	unlocked_file.open("Locked_file.txt");
+// 	unlocked_file << decryptedtext;
+// 	unlocked_file.close();
+// }

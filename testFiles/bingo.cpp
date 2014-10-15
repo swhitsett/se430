@@ -1,4 +1,13 @@
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#include <string>
 
+//Crypto++ lib files
+// #include "cryptopp/modes.h"
+// #include "cryptopp/aes.h"
+// #include "cryptopp/filters.h"
+// #include "cryptopp/osrng.h"
 #include "cryptopp/osrng.h"
 using CryptoPP::AutoSeededRandomPool;
 
@@ -13,6 +22,10 @@ using std::string;
 #include <cstdlib>
 using std::exit;
 
+#include "cryptopp/files.h"
+using CryptoPP::FileSource;
+using CryptoPP::FileSink;
+
 #include "cryptopp/cryptlib.h"
 using CryptoPP::Exception;
 
@@ -23,20 +36,26 @@ using CryptoPP::HexDecoder;
 #include "cryptopp/filters.h"
 using CryptoPP::StringSink;
 using CryptoPP::StringSource;
-using CryptoPP::StreamTransformationFilter;
+// using CryptoPP::StreamTransformationFilter;
+// using CryptoPP::AuthenticatedEncryptionFilter;
 
 #include "cryptopp/aes.h"
 using CryptoPP::AES;
+using CryptoPP::Blowfish;
 
 #include "cryptopp/modes.h"
+#include "cryptopp/secblock.h"
+using CryptoPP::SecByteBlock;
+
 using CryptoPP::CFB_Mode;
+using namespace std;
 
 using namespace std;
 int main(int argc, char* argv[])
 {
 AutoSeededRandomPool prng;
 
-SecByteBlock key(Blowfish::DEFAULT_KEYLENGTH);
+SecByteBlock key[Blowfish::DEFAULT_KEYLENGTH];
 prng.GenerateBlock( key, key.size() );
 
 byte iv[ Blowfish::BLOCKSIZE ];

@@ -11,14 +11,6 @@
 #include "cryptopp/osrng.h"
 using CryptoPP::AutoSeededRandomPool;
 
-#include <iostream>
-using std::cout;
-using std::cerr;
-using std::endl;
-
-#include <string>
-using std::string;
-
 #include <cstdlib>
 using std::exit;
 
@@ -53,14 +45,14 @@ void decrypt_file(string,string);
 
 int main(int argc, char* argv[])
 {
-	if(argv[1] == "e")
+	if(argv[1] == 'e')
 	{
 		string originalFile = argv[2];
 		string encryptedFile = argv[2];
 		encryptedFile = encryptedFile+"e";
 		encrypt_file(originalFile,encryptedFile);
 	}
-	else if(argv[1] == "d")
+	else if(argv[1] == 'd')
 	{
 		string encryptedFile = argv[2];
 		string decryptedFile = encryptedFile.substr(0,encryptedFile.size()-1); // remove e
@@ -82,7 +74,8 @@ void encrypt_file(string originalName, string encryptedName)
 	CFB_Mode< AES >::Encryption e1;//EAX< Blowfish >::Encryption e1;
    e1.SetKeyWithIV(key, sizeof(key), iv, sizeof(iv));
 
-   FileSource fs1(originalName.c_str(), true, FileSink(encryptedName.c_str()) );
+   FileSource fs1(originalName.c_str(), true, StreamTransformationFilter(e1,new FileSink(encryptedName.c_str())) );
+
 }
 
 void decrypt_file(string encryptedName, string decryptedName)

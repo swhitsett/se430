@@ -21,10 +21,12 @@ int main(int argc, char* argv[])
 	if(argc == 2)
 	{
 		string line;
-		ifstream myfile (argv[1]);
+		ifstream myfile (argv[1], ios::binary);
 		ofstream inputFile ("asdf.jpg");
 		if(myfile.is_open())
 		{
+			getline(myfile, line);
+			cout<<line<<endl;
 			myfile.is_open();
 			while(getline(myfile, line))
 				inputFile << decrypt_file(line) <<"\n";
@@ -36,15 +38,15 @@ int main(int argc, char* argv[])
 	}
 	else if(argc == 3)
 	{
-		ifstream myfile (argv[1], ifstream::binary);
+		// ifstream myfile (argv[1], ifstream::binary);
 
-		myfile.seekg(0, myfile.end);
-		int length = myfile.tellg();
-		myfile.seekg(0, myfile.beg);
+		// myfile.seekg(0, myfile.end);
+		// int length = myfile.tellg();
+		// myfile.seekg(0, myfile.beg);
 
-		byte *buffer = new byte[length];
-		myfile.read(buffer,length);
-		encrypt_file(buffer);
+		// byte *buffer = new byte[length];
+		// myfile.read(buffer,length);
+		// encrypt_file(buffer);
 		// string line;
 		// ifstream myfile (argv[1]);
 		// ofstream inputFile (argv[2]);
@@ -67,7 +69,7 @@ byte* encrypt_file(byte* data)
 	byte* ciphertext;
 	//ofstream aes_file;
 
-	memset( key, 0x00, CryptoPP::AES::DEFAULT_KEYLENGTH );
+	memset( key, 0x00, CryptoPP::AES::MAX_KEYLENGTH );
 	memset( iv, 0x00, CryptoPP::AES::BLOCKSIZE );
 
 	CryptoPP::AES::Encryption aesEncryption(key, CryptoPP::AES::DEFAULT_KEYLENGTH);
@@ -89,7 +91,7 @@ string decrypt_file(string data)
 
 	string ciphertex = data;
 	string decryptedtext;
-	cout<<"daum!!"<<endl;
+	//cout<<"daum!!"<<endl;
 	// ifstream created_file("Locked_file.txt");
 	// ofstream unlocked_file;
 

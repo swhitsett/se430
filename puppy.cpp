@@ -150,10 +150,10 @@ int main(int argc, char* argv[])
     ifile.read((char*)temp.data(), temp.size());
    
     StringSource ss1( temp, true,
-                     new AuthenticatedEncryptionFilter( e1,
-                                                       new FileSink( efilename.c_str() )
-                                                       ) // StreamTransformationFilter
-                     ); // StringSource
+                    new AuthenticatedEncryptionFilter( e1,
+                    new FileSink( efilename.c_str() )
+                    ) // StreamTransformationFilter
+                    ); // StringSource
    
     /*********************************\
      \*********************************/
@@ -162,11 +162,11 @@ int main(int argc, char* argv[])
     d2.SetKeyWithIV( key, key.size(), iv, sizeof(iv) );
    
     FileSource fs2( efilename.c_str(), true,
-                     new AuthenticatedDecryptionFilter( d2,
-                                                       new FileSink( rfilename.c_str() ),
-                                                       AuthenticatedDecryptionFilter::THROW_EXCEPTION
-                                                       ) // StreamTransformationFilter
-                     ); // StringSource
+                    new AuthenticatedDecryptionFilter( d2,
+                    new FileSink( rfilename.c_str() ),
+                    AuthenticatedDecryptionFilter::THROW_EXCEPTION
+                    ) // StreamTransformationFilter
+                    ); // StringSource
        
        
     } catch (const Exception& ex) {
@@ -177,35 +177,35 @@ int main(int argc, char* argv[])
 }
 // int main(int argc, char* argv[])
 // {
-// 	std::ifstream ifile("puppy-and-teddy-orig.jpg", ios::binary);
-// 	std::ifstream::pos_type size = ifile.seekg(0, std::ios_base::end).tellg();
-// 	ifile.seekg(0, std::ios_base::beg);
-	 
-// 	string temp;
-// 	temp.resize(size);
-// 	ifile.read((char*)temp.data(), temp.size());
-	 
-// 	/*********************************
-// 	*********************************/
-	 
-// 	EAX< Blowfish >::Encryption e1;
-// 	e1.SetKeyWithIV(key, key.size(), iv, sizeof(iv));
-	 
-// 	StringSource ss1(temp, true,
-// 	                 new AuthenticatedEncryptionFilter( e1,
-// 	                     new FileSink(efilename.c_str())
-// 	                 ) );
-	 
-// 	/*********************************
-// 	*********************************/
-	 
-// 	EAX< Blowfish >::Decryption d2;
-// 	d2.SetKeyWithIV( key, key.size(), iv, sizeof(iv) );
-	 
-// 	FileSource fs2(efilename.c_str(), true,
-// 	               new AuthenticatedDecryptionFilter(d2,
-// 	                   new FileSink(rfilename.c_str()),
-// 	                   AuthenticatedDecryptionFilter::THROW_EXCEPTION
-// 	               ) );
-// 	return 0;
+//  std::ifstream ifile("puppy-and-teddy-orig.jpg", ios::binary);
+//  std::ifstream::pos_type size = ifile.seekg(0, std::ios_base::end).tellg();
+//  ifile.seekg(0, std::ios_base::beg);
+     
+//  string temp;
+//  temp.resize(size);
+//  ifile.read((char*)temp.data(), temp.size());
+     
+//  /*********************************
+//  *********************************/
+     
+//  EAX< Blowfish >::Encryption e1;
+//  e1.SetKeyWithIV(key, key.size(), iv, sizeof(iv));
+     
+//  StringSource ss1(temp, true,
+//                   new AuthenticatedEncryptionFilter( e1,
+//                       new FileSink(efilename.c_str())
+//                   ) );
+     
+//  /*********************************
+//  *********************************/
+     
+//  EAX< Blowfish >::Decryption d2;
+//  d2.SetKeyWithIV( key, key.size(), iv, sizeof(iv) );
+     
+//  FileSource fs2(efilename.c_str(), true,
+//                 new AuthenticatedDecryptionFilter(d2,
+//                     new FileSink(rfilename.c_str()),
+//                     AuthenticatedDecryptionFilter::THROW_EXCEPTION
+//                 ) );
+//  return 0;
 // }

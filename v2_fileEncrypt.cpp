@@ -1,126 +1,195 @@
+// g++ -DDEBUG=1 -g3 -O0 -Wall -Wextra cryptopp-test.cpp -o cryptopp-test.exe -lcryptopp
+// g++ -DNDEBUG=1 -g3 -O2 -Wall -Wextra cryptopp-test.cpp -o cryptopp-test.exe -lcryptopp
+ 
 #include <iostream>
-#include <iomanip>
-#include <fstream>
+using std::ostream;
+using std::cout;
+using std::cerr;
+using std::endl;
+using std::ios;
+ 
 #include <string>
-
-#include "cryptopp/osrng.h"
-using CryptoPP::AutoSeededRandomPool;
-
-#include <cstdlib>
-using std::exit;
-
-#include "cryptopp/files.h"
-using CryptoPP::FileSource;
-using CryptoPP::FileSink;
-
-#include "cryptopp/cryptlib.h"
+using std::string;
+ 
+#include <vector>
+using std::vector;
+ 
+#include <algorithm>
+using std::sort;
+using std::less;
+ 
+#include <fstream>
+using std::ifstream;
+ 
+#include <cryptopp/cryptlib.h>
 using CryptoPP::Exception;
-
-#include "cryptopp/hex.h"
+using CryptoPP::PK_Encryptor;
+using CryptoPP::PK_Decryptor;
+ 
+#include <cryptopp/sha.h>
+using CryptoPP::SHA256;
+ 
+#include <cryptopp/secblock.h>
+using CryptoPP::SecByteBlock;
+ 
+#include <cryptopp/files.h>
+using CryptoPP::FileSink;
+using CryptoPP::FileSource;
+ 
+#include <cryptopp/queue.h>
+using CryptoPP::ByteQueue;
+ 
+#include <cryptopp/hex.h>
 using CryptoPP::HexEncoder;
 using CryptoPP::HexDecoder;
-
-#include "cryptopp/filters.h"
+ 
+#include <cryptopp/base64.h>
+using CryptoPP::Base64Encoder;
+using CryptoPP::Base64Decoder;
+ 
+#include <cryptopp/filters.h>
 using CryptoPP::StringSink;
 using CryptoPP::StringSource;
-// using CryptoPP::StreamTransformationFilter;
- using CryptoPP::AuthenticatedEncryptionFilter;
-
+using CryptoPP::FileSink;
+using CryptoPP::FileSource;
+using CryptoPP::PK_EncryptorFilter;
+using CryptoPP::PK_DecryptorFilter;
+using CryptoPP::StreamTransformationFilter;
+using CryptoPP::AuthenticatedEncryptionFilter;
+using CryptoPP::AuthenticatedDecryptionFilter;
+ 
+#include <cryptopp/osrng.h>
+using CryptoPP::AutoSeededRandomPool;
+ 
+#include <cryptopp/integer.h>
+using CryptoPP::Integer;
+ 
+#include <cryptopp/dh.h>
+using CryptoPP::DH;
+ 
+#include <cryptopp/sha.h>
+using CryptoPP::SHA1;
+ 
+#include <cryptopp/modes.h>
+using CryptoPP::CBC_Mode;
+ 
 #include <cryptopp/eax.h>
 using CryptoPP::EAX;
-
-#include "cryptopp/aes.h"
+ 
+#include <cryptopp/tea.h>
+using CryptoPP::TEA;
+ 
+#include <cryptopp/blowfish.h>
 using CryptoPP::AES;
-//using CryptoPP::Blowfish;
+ 
+#include <cryptopp/pssr.h>
+using CryptoPP::PSS;
+ 
+#include <cryptopp/rsa.h>
+using CryptoPP::RSA;
+using CryptoPP::RSASS;
+ 
+#include <cryptopp/nbtheory.h>
+using CryptoPP::ModularExponentiation;
+ 
+#include <cryptopp/eccrypto.h>
+using CryptoPP::ECDSA;
+using CryptoPP::ECP;
+ 
+#include <cryptopp/oids.h>
+using CryptoPP::ASN1::secp521r1;
+ 
+#include <cryptopp/modes.h>
+#include <cryptopp/gzip.h>
+#include <cryptopp/blowfish.h>
+ 
+#include <cryptopp/rsa.h>
+using CryptoPP::RSA;
+using CryptoPP::InvertibleRSAFunction;
+using CryptoPP::RSAES_OAEP_SHA_Encryptor;
+using CryptoPP::RSAES_OAEP_SHA_Decryptor;
+ 
+using CryptoPP::RSASSA_PKCS1v15_SHA_Signer;
+using CryptoPP::RSASSA_PKCS1v15_SHA_Verifier;
+ 
+using CryptoPP::Exception;
+ 
+typedef CryptoPP::ECDSA<ECP, SHA256>::PrivateKey ECDSAPrivateKey;
+typedef CryptoPP::ECDSA<ECP, SHA256>::PublicKey ECDSAPublicKey;
+ 
+void encrypt_file(string);
+void decrypt_file(string);
 
-#include "cryptopp/modes.h"
-
-using CryptoPP::CFB_Mode;
-using namespace std;
-
-string encrypt_file(string);
-string decrypt_file(string);
-
-byte key[ CryptoPP::AES::MAX_KEYLENGTH ]; // cout this to see what it is.
-byte iv[ CryptoPP::AES::BLOCKSIZE ];
+SecByteBlock key(AES::MAX_KEYLENGTH);
+byte iv[ AES::BLOCKSIZE ];
 
 int main(int argc, char* argv[])
 {
+    if(argc == 3)
+    {
+        encrypt_file(argv[2]);
+        decrypt_file("puppy-and-teddy.enc");
+    }
+    else if(argc == 2)
+    {
+        decrypt_file(argv[1]);
+    }
+    else
+        std::cout<<"shit"<<endl;
+    return 0;  
 
-	if(argc == 2)
-	{
-		string line;
-		ifstream myfile (argv[1], ios::binary);
-		ofstream inputFile ("asdf.jpg");
-		if(myfile.is_open())
-		{
-			getline(myfile, line);
-			cout<<line<<endl;
-			myfile.is_open();
-			while(getline(myfile, line))
-				inputFile << decrypt_file(line) <<"\n";
-
-			inputFile.close();
-			myfile.close();
-		}
-		//decrypt_file(argv[1]);
-	}
-	else if(argc == 3)
-	{
-		string line;
-
-		ifstream myfile (argv[1], ifstream::binary);
-		ofstream inputFile (argv[2]);
-		if(myfile.is_open())
-		{
-			myfile.is_open();
-			while(getline(myfile, line))
-				inputFile << encrypt_file(line) <<"\n";
-
-			inputFile.close();
-			myfile.close();
-
-		}
-	}
-	return 0;
+}
+void encrypt_file(string oFile)
+{
+    // SecByteBlock key(AES::MAX_KEYLENGTH);
+    // byte iv[ AES::BLOCKSIZE ];
+   
+    string ofilename = oFile;
+    string efilename = "puppy-and-teddy.enc";
+    //string rfilename = "puppy-and-teddy-recovered.jpg";
+   
+    //try {
+       
+        /*********************************\
+         \*********************************/
+       
+    EAX< AES >::Encryption e1;
+    e1.SetKeyWithIV( key, key.size(), iv, sizeof(iv) );
+   
+    std::ifstream ifile(oFile.c_str(), ios::binary);
+    std::ifstream::pos_type size = ifile.seekg(0, std::ios_base::end).tellg();
+    ifile.seekg(0, std::ios_base::beg);
+   
+    string temp;
+    temp.resize(size);
+    ifile.read((char*)temp.data(), temp.size());
+   
+    StringSource ss1( temp, true,
+                    new AuthenticatedEncryptionFilter( e1,
+                    new FileSink( efilename.c_str() )
+                    ) // StreamTransformationFilter
+                    ); // StringSource
+   
+    /*********************************\
+     \*********************************/
 }
 
-string encrypt_file(string oData)
-{
-	string plaintext = oData;
-	string ciphertext;
-	//ofstream aes_file;
+void decrypt_file(string efile)
+{   
 
-	memset( key, 0x00, CryptoPP::AES::MAX_KEYLENGTH );
-	memset( iv, 0x00, CryptoPP::AES::BLOCKSIZE );
+    string efilename = efile;
+    string rfilename = "puppy-and-teddy-recovered.jpg";
 
-	CryptoPP::AES::Encryption aesEncryption(key, CryptoPP::AES::MAX_KEYLENGTH);
-	CryptoPP::CBC_Mode_ExternalCipher::Encryption cbcEncryption( aesEncryption, iv );
+    //SecByteBlock key(AES::MAX_KEYLENGTH);
+    //byte iv[ AES::BLOCKSIZE ];
 
-	CryptoPP::StreamTransformationFilter stfEncryptor(cbcEncryption, new CryptoPP::StringSink( ciphertext ) );
-	stfEncryptor.Put( reinterpret_cast<const unsigned char*>( plaintext.c_str() ), plaintext.length() + 1 );
-	stfEncryptor.MessageEnd();
-
-	return ciphertext;
-	// aes_file.open("Locked_file.txt");
-	// aes_file << ciphertext;
-	// aes_file.close();
-}
-
-string decrypt_file(string eData)
-{
-	string ciphertex = eData;
-	string decryptedtext;
-
-	CryptoPP::AES::Decryption aesDecryption(key, CryptoPP::AES::MAX_KEYLENGTH);
-	CryptoPP::CBC_Mode_ExternalCipher::Decryption cbcDecryption( aesDecryption, iv );
-
-	CryptoPP::StreamTransformationFilter stfDecryptor(cbcDecryption, new CryptoPP::StringSink( decryptedtext ) );
-	stfDecryptor.Put( reinterpret_cast<const unsigned char*>( ciphertex.c_str() ), ciphertex.size() );
-	stfDecryptor.MessageEnd();
-
-	// unlocked_file.open("Locked_file.txt");
-	// unlocked_file << decryptedtext;
-	// unlocked_file.close();
-	return decryptedtext;
+    EAX< AES >::Decryption d2;
+    d2.SetKeyWithIV( key, key.size(), iv, sizeof(iv) );
+   
+    FileSource fs2( efilename.c_str(), true,
+                    new AuthenticatedDecryptionFilter( d2,
+                    new FileSink( rfilename.c_str() ),
+                    AuthenticatedDecryptionFilter::THROW_EXCEPTION
+                    ) // StreamTransformationFilter
+                    ); // StringSource
 }

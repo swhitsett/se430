@@ -1,4 +1,4 @@
-// g++ -DDEBUG=1 -g3 -O0 -Wall -Wextra cryptopp-test.cpp -o cryptopp-test.exe -lcryptopp
+// g++ -DDEBUG=1 -g3 -O0 -Wall -Wextra v2_fleEncrypt.cpp -o crypt -lcryptopp
 // g++ -DNDEBUG=1 -g3 -O2 -Wall -Wextra cryptopp-test.cpp -o cryptopp-test.exe -lcryptopp
  
 #include <iostream>
@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
     if(argc == 3)
     {
         encrypt_file(argv[2]);
-        decrypt_file("puppy-and-teddy.enc");
+        //decrypt_file("puppy-and-teddy.enc");
     }
     else if(argc == 2)
     {
@@ -145,7 +145,8 @@ void encrypt_file(string oFile)
     // byte iv[ AES::BLOCKSIZE ];
    
     string ofilename = oFile;
-    string efilename = "puppy-and-teddy.enc";
+    string outFile = "puppy-and-teddy.encf";
+    string efilename = outFile.;//"puppy-and-teddy.enc";
     //string rfilename = "puppy-and-teddy-recovered.jpg";
    
     //try {
